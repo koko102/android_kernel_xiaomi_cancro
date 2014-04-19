@@ -425,15 +425,17 @@ static struct clk *cpu_clk[] = {
 };
 
 static void get_krait_bin_format_b(struct platform_device *pdev,
-					int *speed, int *pvs, int *pvs_ver)
+			int *speed, int *pvs, int *svs_pvs, int *pvs_ver)
 {
 	u32 pte_efuse, redundant_sel;
 	struct resource *res;
 	void __iomem *base;
+	void __iomem *base_svs;
 
 	*speed = 0;
 	*pvs = 0;
 	*pvs_ver = 0;
+	*svs_pvs = -1;
 
 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "efuse");
 	if (!res) {
@@ -504,9 +506,13 @@ static void get_krait_bin_format_b(struct platform_device *pdev,
 	pte_efuse = readl_relaxed(base + 0x4) & BIT(21);
 	if (pte_efuse) {
 		dev_info(&pdev->dev, "PVS bin: %d\n", *pvs);
+		if (*svs_pvs >= 0)
+			dev_info(&pdev->dev, "SVS PVS bin: %d\n", *svs_pvs);
+
 	} else {
 		dev_warn(&pdev->dev, "PVS bin not set. Defaulting to 0!\n");
 		*pvs = 0;
+		*svs_pvs = -1;
 	}
 
 #ifdef CONFIG_PVS_LEVEL_INTERFACE
@@ -704,10 +710,10 @@ static int clock_krait_8974_driver_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
 	struct clk *c;
-	int speed, pvs, pvs_ver, config_ver, rows, cpu;
-	unsigned long *freq, cur_rate, aux_rate;
-	int *uv, *ua;
-	u32 *dscr, vco_mask, config_val;
+	int speed, pvs, svs_pvs, pvs_ver, config_ver, rows, cpu, svs_row = 0;
+	unsigned long *freq, *svs_freq, cur_rate, aux_rate;
+	int *uv, *ua, *svs_uv, *svs_ua;
+	u32 *dscr, vco_mask, config_val, svs_fmax;
 	int ret;
 
 	vdd_l2.regulator[0] = devm_regulator_get(dev, "l2-dig");
@@ -794,7 +800,7 @@ static int clock_krait_8974_driver_probe(struct platform_device *pdev)
 		dev_info(&pdev->dev, "PVS config version: %d\n", config_ver);
 	}
 
-	get_krait_bin_format_b(pdev, &speed, &pvs, &pvs_ver);
+	get_krait_bin_format_b(pdev, &speed, &pvs, &svs_pvs, &pvs_ver);
 	snprintf(table_name, ARRAY_SIZE(table_name),
 			"qcom,speed%d-pvs%d-bin-v%d", speed, pvs, pvs_ver);
 
@@ -812,6 +818,66 @@ static int clock_krait_8974_driver_probe(struct platform_device *pdev)
 			dev_info(dev, "Safe voltage plan loaded.\n");
 			pvs = 0;
 			rows = ret;
+		}
+	} else if (svs_pvs >= 0) {
+		/* Find the split freq for svs fmax */
+		ret = of_property_read_u32(dev->of_node, "qcom,svs-fmax",
+		     &svs_fmax);
+		if (ret) {
+			dev_err(dev, "Unable to find krait fmax for svs\n");
+			return ret;
+		}
+
+		/* Find the svs fmax freq row */
+		while ((svs_row < rows) && (freq[svs_row] != svs_fmax))
+			svs_row++;
+
+		if (svs_row == rows) {
+			dev_err(dev, "Invalid krait fmax for svs\n");
+			return -EINVAL;
+		}
+
+		snprintf(table_name, ARRAY_SIZE(table_name),
+			"qcom,speed%d-pvs%d-bin-v%d", speed, svs_pvs, pvs_ver);
+
+		rows = parse_tbl(dev, table_name, 3,
+			(u32 **) &svs_freq, (u32 **) &svs_uv, (u32 **) &svs_ua);
+		if (rows > 0) {
+			/* Use the svs voltage data for svs freqs */
+			while (svs_row >= 0) {
+				uv[svs_row] = svs_uv[svs_row];
+				svs_row--;
+			}
+
+			devm_kfree(dev, svs_freq);
+			devm_kfree(dev, svs_uv);
+			devm_kfree(dev, svs_ua);
+		} else {
+			/* Fall back to most conservative svs pvs table */
+			dev_err(dev, "Unable to load svs voltage plan %s!\n",
+				table_name);
+
+			snprintf(table_name, ARRAY_SIZE(table_name),
+			"qcom,speed0-pvs0-bin-v%d", pvs_ver);
+
+			rows = parse_tbl(dev, table_name, 3,
+				(u32 **) &svs_freq, (u32 **) &svs_uv,
+				(u32 **) &svs_ua);
+			if (rows < 0) {
+				dev_err(dev, "Unable to load safe voltage plan.\n");
+				return rows;
+			} else {
+				dev_info(dev, "Safe svs voltage plan loaded.\n");
+
+				while (svs_row >= 0) {
+					uv[svs_row] = svs_uv[svs_row];
+					svs_row--;
+				}
+
+				devm_kfree(dev, svs_freq);
+				devm_kfree(dev, svs_uv);
+				devm_kfree(dev, svs_ua);
+			}
 		}
 	}
 
