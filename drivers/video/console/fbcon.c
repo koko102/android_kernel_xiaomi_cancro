@@ -1228,8 +1228,11 @@ static void fbcon_deinit(struct vc_data *vc)
 finished:
 
 	fbcon_free_font(p, free_font);
+<<<<<<< HEAD
 	if (free_font)
 		vc->vc_font.data = NULL;
+=======
+>>>>>>> b6fa8a1... Linux 3.4.30 -> 3.4.40
 
 	if (!con_is_bound(&fb_con))
 		fbcon_exit();
