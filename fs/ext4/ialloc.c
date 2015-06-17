@@ -798,6 +798,14 @@ got:
 		gdp->bg_checksum = ext4_group_desc_csum(sbi, group, gdp);
 	}
 	ext4_unlock_group(sb, group);
+<<<<<<< HEAD
+=======
+
+	BUFFER_TRACE(inode_bitmap_bh, "call ext4_handle_dirty_metadata");
+	err = ext4_handle_dirty_metadata(handle, NULL, inode_bitmap_bh);
+	if (err)
+		goto fail;
+>>>>>>> e4d645a... Linux 3.4.78 -> 3.4.95
 
 	BUFFER_TRACE(group_desc_bh, "call ext4_handle_dirty_metadata");
 	err = ext4_handle_dirty_metadata(handle, NULL, group_desc_bh);
