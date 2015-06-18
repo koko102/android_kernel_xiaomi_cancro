@@ -1643,6 +1643,7 @@ static int parse_options(char *options, struct super_block *sb,
 					"not specified");
 			return 0;
 		}
+<<<<<<< HEAD
 	}
 #endif
 	if (test_opt(sb, DIOREAD_NOLOCK)) {
@@ -1654,6 +1655,8 @@ static int parse_options(char *options, struct super_block *sb,
 				 "dioread_nolock if block size != PAGE_SIZE");
 			return 0;
 		}
+=======
+>>>>>>> ba09c67... Linux 3.4.106
 	}
 <<<<<<< HEAD
 =======

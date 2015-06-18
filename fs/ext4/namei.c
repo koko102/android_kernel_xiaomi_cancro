@@ -1052,10 +1052,14 @@ static struct dentry *ext4_lookup(struct inode *dir, struct dentry *dentry, stru
 			return ERR_PTR(-EIO);
 		}
 <<<<<<< HEAD
+<<<<<<< HEAD
 		inode = ext4_iget_normal(dir->i_sb, ino);
 =======
 		inode = ext4_iget(dir->i_sb, ino);
 >>>>>>> d31b682... Linux 3.4.0 -> 3.4.10
+=======
+		inode = ext4_iget_normal(dir->i_sb, ino);
+>>>>>>> ba09c67... Linux 3.4.106
 		if (inode == ERR_PTR(-ESTALE)) {
 			EXT4_ERROR_INODE(dir,
 					 "deleted inode referenced: %u",
