@@ -1070,6 +1070,9 @@ void umount_tree(struct mount *mnt, int propagate, struct list_head *kill)
 	for (p = mnt; p; p = next_mnt(p, mnt))
 		list_move(&p->mnt_hash, &tmp_list);
 
+	list_for_each_entry(p, &tmp_list, mnt_hash)
+		list_del_init(&p->mnt_child);
+
 	if (propagate)
 		propagate_umount(&tmp_list);
 
@@ -1080,7 +1083,6 @@ void umount_tree(struct mount *mnt, int propagate, struct list_head *kill)
 		if (p->mnt_ns)
 			__mnt_make_shortterm(p);
 		p->mnt_ns = NULL;
-		list_del_init(&p->mnt_child);
 		if (mnt_has_parent(p)) {
 			p->mnt_parent->mnt_ghosts++;
 			dentry_reset_mounted(p->mnt_mountpoint);
@@ -1712,7 +1714,11 @@ static int do_remount(struct path *path, int flags, int mnt_flags,
 	else
 		err = do_remount_sb(sb, flags, data, 0);
 	if (!err) {
+<<<<<<< HEAD
 		br_write_lock(&vfsmount_lock);
+=======
+		br_write_lock(vfsmount_lock);
+>>>>>>> 1c652ee... Linux 3.4.105
 		mnt_flags |= mnt->mnt.mnt_flags & ~MNT_USER_SETTABLE_MASK;
 		mnt->mnt.mnt_flags = mnt_flags;
 		br_write_unlock(&vfsmount_lock);
