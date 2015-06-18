@@ -241,6 +241,7 @@ static int slave_configure(struct scsi_device *sdev)
 			sdev->use_rpm_auto = 1;
 			sdev->autosuspend_delay = us->sdev_autosuspend_delay;
 		}
+<<<<<<< HEAD
 
 		/*
 		 * This quirk enables sending consecutive TEST_UNIT_READY
@@ -250,6 +251,12 @@ static int slave_configure(struct scsi_device *sdev)
 		if (us->fflags & US_FL_TUR_AFTER_WRITE)
 			blk_queue_rq_timeout(sdev->request_queue, (60 * HZ));
 
+=======
+		
+		/* A few buggy USB-ATA bridges don't understand FUA */
+		if (us->fflags & US_FL_BROKEN_FUA)
+			sdev->broken_fua = 1;
+>>>>>>> bba7f63... Linux 3.4.107
 	} else {
 
 		/* Non-disk-type devices don't need to blacklist any pages
