@@ -2,7 +2,6 @@
  * drivers/thermal/msm_thermal_simple.c
  *
  * Copyright (C) 2014-2015, Sultanxda <sultanxda@gmail.com>
- * Copyright (C) 2014-2015, Tarun93 <tarunmyid@gmail.com> 
  *
  * Originally based off the MSM8x60 thermal implementation by:
  * Copyright (c) 2012, The Linux Foundation. All rights reserved.
@@ -93,7 +92,7 @@ static void msm_thermal_main(struct work_struct *work)
 	temp = result.physical;
 	old_throttle = t_pol->cpu_throttle;
        /* Debug */
-       // pr_warn("xo_therm_pu2 temp is %lluC\n", temp);
+       pr_warn("xo_therm_pu2 temp is %lluC\n", temp);
 	/* Low trip point */
 	if ((temp >= t_conf->trip_low_degC) &&
 		(temp < t_conf->trip_mid_degC) &&
