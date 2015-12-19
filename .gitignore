@@ -85,6 +85,9 @@ GTAGS
 *.sh
 kernel/hz.bc
 zip/
+zip/kernel/zImage
+zip/kernel/dt.img
+zip/kernel/dtb
 
 *~
 *.sh
