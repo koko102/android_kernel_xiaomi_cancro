@@ -66,17 +66,18 @@ static spinlock_t speedchange_cpumask_lock;
 static struct mutex gov_lock;
 
 /* Hi speed to bump to from lo speed when load burst (default max) */
-static unsigned int hispeed_freq;
+#define DEFAULT_HISPEED_FREQ 1728000
+static unsigned int hispeed_freq = DEFAULT_HISPEED_FREQ;
 
 /* Go to hi speed when CPU load at or above this value. */
-#define DEFAULT_GO_HISPEED_LOAD 99
+#define DEFAULT_GO_HISPEED_LOAD 70
 static unsigned long go_hispeed_load = DEFAULT_GO_HISPEED_LOAD;
 
 /* Sampling down factor to be applied to min_sample_time at max freq */
 static unsigned int sampling_down_factor;
 
 /* Target load.  Lower values result in higher CPU speeds. */
-#define DEFAULT_TARGET_LOAD 90
+#define DEFAULT_TARGET_LOAD 65
 static unsigned int default_target_loads[] = {DEFAULT_TARGET_LOAD};
 static spinlock_t target_loads_lock;
 static unsigned int *target_loads = default_target_loads;
