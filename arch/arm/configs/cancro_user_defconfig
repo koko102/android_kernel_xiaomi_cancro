@@ -696,6 +696,8 @@ CONFIG_BOOT_INFO=y
 # CPU Power Management
 #
 
+CONFIG_MSM_HOTPLUG=y
+
 #
 # CPU Frequency scaling
 #
