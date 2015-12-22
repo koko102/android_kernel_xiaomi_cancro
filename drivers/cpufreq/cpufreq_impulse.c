@@ -637,11 +637,7 @@ static int cpufreq_impulse_speedchange_task(void *data)
 					__cpufreq_driver_target(pcpu->policy,
 								max_freq,
 								CPUFREQ_RELATION_H);
-				else
-					__cpufreq_driver_target(pcpu->policy,
-								max_freq,
-								CPUFREQ_RELATION_C);
-
+				
 				for_each_cpu(j, pcpu->policy->cpus) {
 					pjcpu = &per_cpu(cpuinfo, j);
 					pjcpu->hispeed_validate_time = hvt;
