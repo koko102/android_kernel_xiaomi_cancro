@@ -63,11 +63,7 @@ int vfs_fstat(unsigned int fd, struct kstat *stat)
 
 	if (f) {
 		error = vfs_getattr(f->f_path.mnt, f->f_path.dentry, stat);
-<<<<<<< HEAD
-		fput(f);
-=======
 		fput_light(f, fput_needed);
->>>>>>> e4d645a... Linux 3.4.78 -> 3.4.95
 	}
 	return error;
 }
