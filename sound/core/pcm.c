@@ -1238,14 +1238,6 @@ static int snd_pcm_dev_disconnect(struct snd_device *device)
 	wake_up(&pcm->open_wait);
 	list_del_init(&pcm->list);
 	for (cidx = 0; cidx < 2; cidx++)
-<<<<<<< HEAD
-		for (substream = pcm->streams[cidx].substream; substream; substream = substream->next)
-			if (substream->runtime) {
-				substream->runtime->status->state = SNDRV_PCM_STATE_DISCONNECTED;
-                                wake_up(&substream->runtime->sleep);
-                                wake_up(&substream->runtime->tsleep);
-                        }
-=======
 		for (substream = pcm->streams[cidx].substream; substream; substream = substream->next) {
 			snd_pcm_stream_lock_irq(substream);
 			if (substream->runtime) {
@@ -1255,7 +1247,6 @@ static int snd_pcm_dev_disconnect(struct snd_device *device)
 			}
 			snd_pcm_stream_unlock_irq(substream);
 		}
->>>>>>> d182a61... Linux 3.4.10 -> 3.4.20
 	list_for_each_entry(notify, &snd_pcm_notify_list, list) {
 		notify->n_disconnect(pcm);
 	}
