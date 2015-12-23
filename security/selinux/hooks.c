@@ -1356,10 +1356,7 @@ static int inode_doinit_with_dentry(struct inode *inode, struct dentry *opt_dent
 			if (!dentry)
 				goto out_unlock;
 			isec->sclass = inode_mode_to_security_class(inode->i_mode);
-<<<<<<< HEAD
 			rc = selinux_proc_get_sid(dentry, isec->sclass, &sid);
-=======
->>>>>>> e4d645a... Linux 3.4.78 -> 3.4.95
 			dput(dentry);
 			if (rc)
 				goto out_unlock;
