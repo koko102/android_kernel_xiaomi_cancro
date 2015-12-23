@@ -91,6 +91,10 @@ zip/
 zip/kernel/zImage
 zip/kernel/dt.img
 zip/kernel/dtb
+zip1/
+zip1/kernel/zImage
+zip1/kernel/dt.img
+zip1/kernel/dtb
 
 *~
 \#*#
