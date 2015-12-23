@@ -1714,11 +1714,7 @@ static int do_remount(struct path *path, int flags, int mnt_flags,
 	else
 		err = do_remount_sb(sb, flags, data, 0);
 	if (!err) {
-<<<<<<< HEAD
 		br_write_lock(&vfsmount_lock);
-=======
-		br_write_lock(vfsmount_lock);
->>>>>>> 1c652ee... Linux 3.4.105
 		mnt_flags |= mnt->mnt.mnt_flags & ~MNT_USER_SETTABLE_MASK;
 		mnt->mnt.mnt_flags = mnt_flags;
 		br_write_unlock(&vfsmount_lock);
@@ -2561,11 +2557,7 @@ SYSCALL_DEFINE2(pivot_root, const char __user *, new_root,
 	/* make certain new is below the root */
 	if (!is_path_reachable(new_mnt, new.dentry, &root))
 		goto out4;
-<<<<<<< HEAD
 	br_write_lock(&vfsmount_lock);
-=======
-	br_write_lock(vfsmount_lock);
->>>>>>> ba09c67... Linux 3.4.106
 	detach_mnt(new_mnt, &parent_path);
 	detach_mnt(root_mnt, &root_parent);
 	/* mount old root on put_old */
