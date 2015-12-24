@@ -26,7 +26,6 @@
 #include <linux/init.h>
 #include <linux/err.h>
 #include <linux/input/doubletap2wake.h>
-#include <linux/input/wake_helpers.h>
 #include <linux/slab.h>
 #include <linux/workqueue.h>
 #include <linux/input.h>
