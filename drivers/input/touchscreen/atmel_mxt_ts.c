@@ -5018,7 +5018,7 @@ static void mxt_clear_touch_event(struct mxt_data *data)
         }
         
         
-        if (dt2w_switch == 1 ) {
+        if (dt2w_switch == 1 || s2w_switch == 1) {
             dev_warn(dev, "Enabling irq wake\n");
             enable_irq_wake(data->client->irq);
             data->is_stopped = 1;
@@ -5093,7 +5093,7 @@ static int mxt_resume(struct device *dev)
                 mxt_start(data);
             mutex_unlock(&input_dev->mutex);
          
-        if (dt2w_switch == 1 ) {
+        if (dt2w_switch == 1 || s2w_switch == 1) {
             disable_irq_wake(data->client->irq);
             dev_warn(dev, "disabling irq wake\n");
         } 

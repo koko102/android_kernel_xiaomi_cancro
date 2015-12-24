@@ -4562,7 +4562,7 @@ static void mxt_start(struct mxt_data *data)
 		if (data->is_stopped == 0)
 			return;
 
-		if (dt2w_switch ==0 ) {
+		if (dt2w_switch == 0 && s2w_switch == 0) {
 			error = mxt_set_power_cfg(data, MXT_POWER_CFG_RUN);
 			if (error)
 				return;
@@ -4593,7 +4593,7 @@ static void mxt_stop(struct mxt_data *data)
 			return;
 
 		cancel_delayed_work_sync(&data->calibration_delayed_work);
-		if (dt2w_switch == 0) {
+		if (dt2w_switch == 0 && s2w_switch == 0) {
 			error = mxt_set_power_cfg(data, MXT_POWER_CFG_DEEPSLEEP);
 			if (!error)
 				dev_dbg(dev, "MXT suspended\n");
@@ -4681,7 +4681,7 @@ static int mxt_suspend(struct device *dev)
  
  		mutex_unlock(&input_dev->mutex);
  	} else {
-		if (!(data->wakeup_gesture_mode) && dt2w_switch == 0) {
+		if ((!(data->wakeup_gesture_mode) && dt2w_switch == 0) && (!(data->wakeup_gesture_mode) && s2w_switch == 0)){
 			mxt_disable_irq(data);
                 } else {
 			enable_irq_wake(data->client->irq);
@@ -4763,7 +4763,7 @@ static int mxt_resume(struct device *dev)
  		mutex_unlock(&input_dev->mutex);
  	} else {
 
-		if (!(data->wakeup_gesture_mode) && dt2w_switch == 0) {
+		if ((!(data->wakeup_gesture_mode) && dt2w_switch == 0) && (!(data->wakeup_gesture_mode) && s2w_switch == 0)){
                     mxt_enable_irq(data);
                 } else {
 			disable_irq_wake(data->client->irq);
@@ -5605,7 +5605,7 @@ static int mxt_ts_suspend(struct device *dev)
 		mxt_disable_irq(data);
 		enable_irq_wake(data->client->irq);
 	}
-	if (dt2w_switch == 1) {
+	if (dt2w_switch == 1 || s2w_switch == 1) {
 		enable_irq_wake(data->client->irq);
 	}
 
@@ -5622,7 +5622,7 @@ static int mxt_ts_resume(struct device *dev)
 		disable_irq_wake(data->client->irq);
 		mxt_enable_irq(data);
 	}
-	if (dt2w_switch == 1) {
+	if (dt2w_switch == 1 || s2w_switch == 1) {
 		disable_irq_wake(data->client->irq);
 	}
 

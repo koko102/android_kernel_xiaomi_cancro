@@ -115,7 +115,7 @@ config TOUCHSCREEN_ATMEL_MXT
 config TOUCHSCREEN_SWEEP2WAKE
         tristate "Sweep2Wake for touchscreens"
         select TOUCHSCREEN_PREVENT_SLEEP
-        default n
+        default y
 
 config TOUCHSCREEN_DOUBLETAP2WAKE
 	tristate "DoubleTap2Wake for touchscreens"
