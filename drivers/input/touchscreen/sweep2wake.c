@@ -233,10 +233,7 @@ static void s2w_input_event(struct input_handle *handle, unsigned int type,
 }
 
 static int input_dev_filter(struct input_dev *dev) {
-	if (strstr(dev->name, "touch") ||
-		strstr(dev->name, "atmel-maxtouch") ||
-		strstr(dev->name, "fts")
-		) {
+	if (strstr(dev->name, "touch")) {
 		return 0;
 	} else {
 		return 1;

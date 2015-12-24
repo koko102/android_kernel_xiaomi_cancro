@@ -37,11 +37,6 @@
 #include <linux/notifier.h>
 #include <linux/fb.h>
 #endif
-#ifdef CONFIG_TOUCHSCREEN_PREVENT_SLEEP
-#ifdef CONFIG_TOUCHSCREEN_SWEEP2WAKE
-#include <linux/input/sweep2wake.h>
-#endif
-#endif
 
 /* Version */
 #define MXT_VER_20		20
@@ -5116,19 +5111,7 @@ static int mxt_input_enable(struct input_dev *in_dev)
 {
 	int error = 0;
 	struct mxt_data *ts = input_get_drvdata(in_dev);
-#ifdef CONFIG_TOUCHSCREEN_PREVENT_SLEEP
-	bool prevent_sleep = false;
-	struct i2c_client *client = to_i2c_client(&ts->client->dev);
-#if defined(CONFIG_TOUCHSCREEN_SWEEP2WAKE)
-	prevent_sleep = (s2w_switch > 0);
-#endif
-#endif
 
-#if defined(CONFIG_TOUCHSCREEN_PREVENT_SLEEP)
-	if (prevent_sleep)
-		disable_irq_wake(client->irq);
-	else
-#endif
 	error = mxt_resume(&ts->client->dev);
 	if (error)
 		dev_err(&ts->client->dev, "%s: failed\n", __func__);
@@ -5140,19 +5123,6 @@ static int mxt_input_disable(struct input_dev *in_dev)
 {
 	int error = 0;
 	struct mxt_data *ts = input_get_drvdata(in_dev);
-#ifdef CONFIG_TOUCHSCREEN_PREVENT_SLEEP
-	bool prevent_sleep = false;
-	struct i2c_client *client = to_i2c_client(&ts->client->dev);
-#if defined(CONFIG_TOUCHSCREEN_SWEEP2WAKE)
-	prevent_sleep = (s2w_switch > 0);
-#endif
-#endif
-
-#if defined(CONFIG_TOUCHSCREEN_PREVENT_SLEEP)
-	if (prevent_sleep)
-		enable_irq_wake(client->irq);
-	else
-#endif
 	error = mxt_suspend(&ts->client->dev);
 	if (error)
 		dev_err(&ts->client->dev, "%s: failed\n", __func__);
@@ -5888,11 +5858,7 @@ static int __devinit mxt_probe(struct i2c_client *client,
 		goto err_free_object;
 
 	error = request_threaded_irq(client->irq, NULL, mxt_interrupt,
-#ifdef CONFIG_TOUCHSCREEN_PREVENT_SLEEP
 			pdata->irqflags | IRQF_NO_SUSPEND, client->dev.driver->name, data);
-#else
-			pdata->irqflags | IRQF_NO_SUSPEND, client->dev.driver->name, data);
-#endif
 	if (error) {
 		dev_err(&client->dev, "Error %d registering irq\n", error);
 		goto err_free_input_device;
