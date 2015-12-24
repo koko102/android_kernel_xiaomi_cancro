@@ -25,7 +25,6 @@
 #include <linux/interrupt.h>
 #include <linux/slab.h>
 #include <linux/pm_wakeup.h>
-#include <linux/input/wake_helpers.h>
 #include <linux/regulator/consumer.h>
 #include <linux/gpio.h>
 #include <linux/string.h>
@@ -33,6 +32,7 @@
 #include <asm/bootinfo.h>
 #include <mach/gpiomux.h>
 #include <linux/input/doubletap2wake.h>
+#include <linux/input/sweep2wake.h>
 #if defined(CONFIG_FB)
 #include <linux/notifier.h>
 #include <linux/fb.h>
