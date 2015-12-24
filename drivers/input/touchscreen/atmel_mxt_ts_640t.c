@@ -34,6 +34,7 @@
 #include <linux/fb.h>
 #endif
 #include <linux/input/doubletap2wake.h>
+#include <linux/input/sweep2wake.h>
 
 
 /* Version */

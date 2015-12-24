@@ -32,6 +32,7 @@
 #include <asm/bootinfo.h>
 #include <mach/gpiomux.h>
 #include <linux/input/doubletap2wake.h>
+#include <linux/input/sweep2wake.h>
 #if defined(CONFIG_FB)
 #include <linux/notifier.h>
 #include <linux/fb.h>
