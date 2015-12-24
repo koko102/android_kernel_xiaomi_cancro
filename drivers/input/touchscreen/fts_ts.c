@@ -26,6 +26,11 @@
 #include <linux/power_supply.h>
 #include <linux/of_gpio.h>
 #include "fts_ts.h"
+#ifdef CONFIG_TOUCHSCREEN_PREVENT_SLEEP
+#ifdef CONFIG_TOUCHSCREEN_SWEEP2WAKE
+#include <linux/input/sweep2wake.h>
+#endif
+#endif
 
 #define DRIVER_FTS		"fts_dummy"
 #define FTS_MAJOR		0x0A
@@ -1337,7 +1342,16 @@ static int fts_input_enable(struct input_dev *in_dev)
 
 #ifdef CONFIG_PM
 	struct fts_data *fts = input_get_drvdata(in_dev);
+#ifdef CONFIG_TOUCHSCREEN_PREVENT_SLEEP
+	bool prevent_sleep = false;
+#if defined(CONFIG_TOUCHSCREEN_SWEEP2WAKE)
+	prevent_sleep = (s2w_switch > 0);
+#endif
+#endif
 
+#if defined(CONFIG_TOUCHSCREEN_PREVENT_SLEEP)
+	if (!prevent_sleep)
+#endif
 	error = fts_resume(fts);
 	if (error)
 		dev_err(fts->dev, "%s: failed\n", __func__);
@@ -1352,6 +1366,16 @@ static int fts_input_disable(struct input_dev *in_dev)
 
 #ifdef CONFIG_PM
 	struct fts_data *fts = input_get_drvdata(in_dev);
+#ifdef CONFIG_TOUCHSCREEN_PREVENT_SLEEP
+	bool prevent_sleep = false;
+#if defined(CONFIG_TOUCHSCREEN_SWEEP2WAKE)
+	prevent_sleep = (s2w_switch > 0);
+#endif
+#endif
+
+#if defined(CONFIG_TOUCHSCREEN_PREVENT_SLEEP)
+	if (!prevent_sleep)
+#endif
 
 	error = fts_suspend(fts);
 	if (error)
@@ -2233,7 +2257,11 @@ struct fts_data *fts_probe(struct device *dev,
 
 	/* start interrupt process */
 	error = request_threaded_irq(fts->irq, NULL, fts_interrupt,
+#ifdef CONFIG_TOUCHSCREEN_PREVENT_SLEEP
+				pdata->irqflags | IRQF_NO_SUSPEND, "fts", fts);
+#else
 				pdata->irqflags, "fts", fts);
+#endif
 	if (error) {
 		dev_err(dev, "fail to request interrupt\n");
 		goto err_unregister_input;
